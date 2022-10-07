@@ -19,7 +19,7 @@
       }
 
       h2 {
-        color: rgb(137, 45, 127);
+        color: rgb(0, 0, 0);
         align-content: center;
         font-family: "Poppins";
         font-weight: 400;
@@ -63,6 +63,61 @@
           .style.setProperty("--progress", scrollPercent);
       }
       document.addEventListener("scroll", updateProgressBar);
+
+      let startReadTime = new Date(
+        performance.timing.connectStart
+      ).toLocaleString("en-GB", {
+        timeZone: "Asia/Singapore",
+        timeZoneName: "long",
+      });
+
+      let startReadTimeAsSec =
+        new Date(performance.timing.connectStart).getTime() / 1000;
+
+      function readingTime(totalSec) {
+        let hr = Math.floor(totalSec / 3600);
+        let min = Math.floor((totalSec - hr * 3600) / 60);
+        let sec = Math.round(totalSec - hr * 3600 - min * 60);
+        return (
+          `• You spent ` +
+          `${hr}` +
+          `hour(s) ` +
+          `${min}` +
+          `min(s) ` +
+          `${sec}` +
+          `second(s) reading the article.`
+        );
+      }
+
+      let trigger = true;
+
+      window.onscroll = function () {
+        let finishReadTime = "";
+        if (
+          trigger &&
+          window.innerHeight + window.scrollY >= document.body.offsetHeight
+        ) {
+          trigger = false;
+
+          finishReadTime = new Date().toLocaleString("en-GB", {
+            timeZone: "Asia/Singapore",
+            timeZoneName: "long",
+          });
+          let finishReadTimeAsSec = new Date().getTime() / 1000;
+
+          alert(
+            `• You start reading the article at ` +
+              `${startReadTime}` +
+              `\n` +
+              `• You finish reading it at ` +
+              `${finishReadTime}` +
+              `\n` +
+              `${readingTime(finishReadTimeAsSec - startReadTimeAsSec)}`
+          );
+        } else {
+          return null;
+        }
+      };
     </script>
     <div id="progress-bar"></div>
 
