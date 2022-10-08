@@ -64,17 +64,7 @@
       }
       document.addEventListener("scroll", updateProgressBar);
 
-      let startReadTime = new Date(
-        performance.timing.connectStart
-      ).toLocaleString("en-GB", {
-        timeZone: "Asia/Singapore",
-        timeZoneName: "long",
-      });
-
-      let startReadTimeAsSec =
-        new Date(performance.timing.connectStart).getTime() / 1000;
-
-      function readingTime(totalSec) {
+      function spendingTime(totalSec) {
         let hr = Math.floor(totalSec / 3600);
         let min = Math.floor((totalSec - hr * 3600) / 60);
         let sec = Math.round(totalSec - hr * 3600 - min * 60);
@@ -89,35 +79,46 @@
         );
       }
 
-      let trigger = true;
-
-      window.onscroll = function () {
-        let finishReadTime = "";
-        if (
-          trigger &&
-          window.innerHeight + window.scrollY >= document.body.offsetHeight
-        ) {
-          trigger = false;
-
-          finishReadTime = new Date().toLocaleString("en-GB", {
+      fetch("http://localhost:8087/api/reading-result")
+        .then((res) => res.json())
+        .then((data) => {
+          let trigger = true;
+          let startReadTimeSec = data.first_salutation_time;
+          let startReadTimeInSG = new Date(
+            data.first_salutation_time * 1000
+          ).toLocaleString("en-GB", {
             timeZone: "Asia/Singapore",
             timeZoneName: "long",
           });
-          let finishReadTimeAsSec = new Date().getTime() / 1000;
 
-          alert(
-            `• You start reading the article at ` +
-              `${startReadTime}` +
-              `\n` +
-              `• You finish reading it at ` +
-              `${finishReadTime}` +
-              `\n` +
-              `${readingTime(finishReadTimeAsSec - startReadTimeAsSec)}`
-          );
-        } else {
-          return null;
-        }
-      };
+          window.onscroll = function () {
+            if (
+              trigger &&
+              window.innerHeight + window.scrollY >= document.body.offsetHeight
+            ) {
+              trigger = false;
+
+              let finishReadTimeSec = new Date().getTime() / 1000;
+              let finishReadTimeInSG = new Date().toLocaleString("en-GB", {
+                timeZone: "Asia/Singapore",
+                timeZoneName: "long",
+              });
+
+              alert(
+                `• You start reading the article at ` +
+                  `${startReadTimeInSG}` +
+                  `\n` +
+                  `• You finish reading it at ` +
+                  `${finishReadTimeInSG}` +
+                  `\n` +
+                  `${spendingTime(finishReadTimeSec - startReadTimeSec)}`
+              );
+            }
+          };
+        })
+        .catch(function (err) {
+          console.error("Something went wrong.", err);
+        });
     </script>
     <div id="progress-bar"></div>
 
