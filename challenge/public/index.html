@@ -8,7 +8,11 @@
       @import url("https://fonts.googleapis.com/css2?family=Lobster&family=Poppins:wght@100;400&display=swap");
 
       .landing {
-        background-color: rgb(184, 209, 167);
+        background-color: white;
+        border-left: 1px solid rgb(197, 197, 197);
+        border-right: 1px solid rgb(197, 197, 197);
+        padding-left: 2vw;
+        padding-right: 2vw;
       }
 
       h1 {
@@ -39,6 +43,35 @@
         background-color: rgba(255, 255, 255, 0.8);
         position: sticky;
         top: 0;
+      }
+
+      .popup {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        height: 100vh;
+        width: 100vw;
+        top: 0;
+        left: 0;
+      }
+
+      .popuptext {
+        background-color: rgba(102, 102, 102, 0.959);
+        font-size: 1.2rem;
+        color: white;
+        font-family: "Poppins";
+        font-weight: bold;
+        padding: 20px;
+        width: 100vw;
+        visibility: hidden;
+        text-align: center;
+      }
+
+      .popup .show {
+        visibility: visible;
+        -webkit-animation: fadeIn 1s;
+        animation: fadeIn 1s;
       }
     </style>
 
@@ -104,15 +137,17 @@
                 timeZoneName: "long",
               });
 
-              alert(
+              document.querySelector("#myPopup").innerText =
                 `• You start reading the article at ` +
-                  `${startReadTimeInSG}` +
-                  `\n` +
-                  `• You finish reading it at ` +
-                  `${finishReadTimeInSG}` +
-                  `\n` +
-                  `${spendingTime(finishReadTimeSec - startReadTimeSec)}`
-              );
+                startReadTimeInSG +
+                `\n` +
+                `• You finish reading it at ` +
+                finishReadTimeInSG +
+                `\n` +
+                `${spendingTime(finishReadTimeSec - startReadTimeSec)}`;
+
+              popup = document.getElementById("myPopup");
+              popup.classList.toggle("show");
             }
           };
         })
@@ -120,6 +155,11 @@
           console.error("Something went wrong.", err);
         });
     </script>
+
+    <div class="popup">
+      <span class="popuptext" id="myPopup"></span>
+    </div>
+
     <div id="progress-bar"></div>
 
     <h1 class="my-5">HTML Ipsum Presents</h1>
