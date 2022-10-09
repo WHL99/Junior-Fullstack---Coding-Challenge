@@ -14,7 +14,7 @@
         padding: 0 2vw 0 2vw;
       }
 
-      @media screen and (max-width: 576px) {
+      @media screen and (max-width: 768px) {
         .landing {
           border: none;
         }
@@ -135,14 +135,17 @@
             timeZoneName: "long",
           });
 
+          let finishReadTimeSec;
+          let hasFinishTimeCookie = document.cookie.includes(";");
+
           window.onscroll = function () {
             if (
+              hasFinishTimeCookie === false &&
               trigger &&
               window.innerHeight + window.scrollY >= document.body.offsetHeight
             ) {
               trigger = false;
-
-              let finishReadTimeSec = new Date().getTime() / 1000;
+              finishReadTimeSec = new Date().getTime() / 1000;
               let finishReadTimeInSG = new Date().toLocaleString("en-GB", {
                 timeZone: "Asia/Singapore",
                 timeZoneName: "long",
@@ -154,16 +157,17 @@
               button.setAttribute("class", "close-btn");
               const landingPopup = document.querySelector(".popup");
               landingPopup.append(button);
-
               document.querySelector(
                 "#myPopup"
               ).innerText = `• You start reading the article at ${startReadTimeInSG}\n• You finish reading it at ${finishReadTimeInSG}\n${spendingTime(
                 finishReadTimeSec - startReadTimeSec
               )}`;
-
               const popup = document.getElementById("myPopup");
-
               popup.classList.toggle("show");
+
+              document.cookie = `LastSalutationTime ${
+                finishReadTimeSec * 1000
+              }`;
             }
           };
         })
