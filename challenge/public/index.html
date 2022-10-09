@@ -11,8 +11,13 @@
         background-color: white;
         border-left: 1px solid rgb(197, 197, 197);
         border-right: 1px solid rgb(197, 197, 197);
-        padding-left: 2vw;
-        padding-right: 2vw;
+        padding: 0 2vw 0 2vw;
+      }
+
+      @media screen and (max-width: 576px) {
+        .landing {
+          border: none;
+        }
       }
 
       h1 {
@@ -39,8 +44,8 @@
       #progress-bar {
         --progress: 0;
         width: var(--progress);
-        height: 10px;
-        background-color: rgba(255, 255, 255, 0.8);
+        height: 12px;
+        background-color: rgba(7, 148, 242, 0.6);
         position: sticky;
         top: 0;
       }
@@ -73,6 +78,20 @@
         -webkit-animation: fadeIn 1s;
         animation: fadeIn 1s;
       }
+      .close-btn {
+        background-color: Transparent;
+        border: none;
+        padding: 15px;
+        color: rgba(102, 102, 102, 0.959);
+        font-size: 3rem;
+        cursor: pointer;
+      }
+
+      .hide {
+        visibility: hidden;
+        -webkit-animation: fadeIn 1s;
+        animation: fadeIn 1s;
+      }
     </style>
 
     <title>Braineffect - Challenge</title>
@@ -85,7 +104,7 @@
     />
   </head>
 
-  <body class="col-12 col-md-8 col-lg-6 m-auto landing">
+  <body class="col-11 col-md-8 col-lg-6 m-auto landing">
     <script>
       function updateProgressBar() {
         const { scrollTop, scrollHeight } = document.documentElement;
@@ -101,15 +120,7 @@
         let hr = Math.floor(totalSec / 3600);
         let min = Math.floor((totalSec - hr * 3600) / 60);
         let sec = Math.round(totalSec - hr * 3600 - min * 60);
-        return (
-          `• You spent ` +
-          `${hr}` +
-          `hour(s) ` +
-          `${min}` +
-          `min(s) ` +
-          `${sec}` +
-          `second(s) reading the article.`
-        );
+        return `• You spent ${hr} hour(s) ${min} min(s) ${sec} second(s) reading the article.`;
       }
 
       fetch("http://localhost:8087/api/reading-result")
@@ -137,16 +148,21 @@
                 timeZoneName: "long",
               });
 
-              document.querySelector("#myPopup").innerText =
-                `• You start reading the article at ` +
-                startReadTimeInSG +
-                `\n` +
-                `• You finish reading it at ` +
-                finishReadTimeInSG +
-                `\n` +
-                `${spendingTime(finishReadTimeSec - startReadTimeSec)}`;
+              const button = document.createElement("button");
+              button.innerText = "×";
+              button.setAttribute("onclick", "closePopupFunction()");
+              button.setAttribute("class", "close-btn");
+              const landingPopup = document.querySelector(".popup");
+              landingPopup.append(button);
 
-              popup = document.getElementById("myPopup");
+              document.querySelector(
+                "#myPopup"
+              ).innerText = `• You start reading the article at ${startReadTimeInSG}\n• You finish reading it at ${finishReadTimeInSG}\n${spendingTime(
+                finishReadTimeSec - startReadTimeSec
+              )}`;
+
+              const popup = document.getElementById("myPopup");
+
               popup.classList.toggle("show");
             }
           };
@@ -154,10 +170,16 @@
         .catch(function (err) {
           console.error("Something went wrong.", err);
         });
+
+      let closeBtn = document.querySelector("button");
+      function closePopupFunction() {
+        document.getElementById("myPopup").classList.remove("show");
+        document.querySelector(".close-btn").classList.add("hide");
+      }
     </script>
 
     <div class="popup">
-      <span class="popuptext" id="myPopup"></span>
+      <span class="popuptext" id="myPopup"> </span>
     </div>
 
     <div id="progress-bar"></div>
