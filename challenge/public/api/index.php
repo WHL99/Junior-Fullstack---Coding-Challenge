@@ -25,7 +25,7 @@ $app->get('/reading-result', function (Request $request, Response $response, $ar
         $cookieName = "FirstSalutationTime";
         $cookieValue = (string)time();
         $expires = time() + 60 * 60 * 24 * 30; // 30 days.
-        setcookie($cookieName, $cookieValue, $expires, '/');
+        setcookie($cookieName, $cookieValue, $expires, '/',null,null,true);
     }
 
     $response->getBody()->write(json_encode([

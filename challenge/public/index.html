@@ -126,7 +126,6 @@
       fetch("http://localhost:8087/api/reading-result")
         .then((res) => res.json())
         .then((data) => {
-          let trigger = true;
           let startReadTimeSec = data.first_salutation_time;
           let startReadTimeInSG = new Date(
             data.first_salutation_time * 1000
@@ -136,11 +135,12 @@
           });
 
           let finishReadTimeSec;
-          let hasFinishTimeCookie = document.cookie.includes(";");
+          let trigger = true;
+          let hasFinishTimeCookie = document.cookie.length;
 
           window.onscroll = function () {
             if (
-              hasFinishTimeCookie === false &&
+              hasFinishTimeCookie === 0 &&
               trigger &&
               window.innerHeight + window.scrollY >= document.body.offsetHeight
             ) {
@@ -165,9 +165,9 @@
               const popup = document.getElementById("myPopup");
               popup.classList.toggle("show");
 
-              document.cookie = `LastSalutationTime ${
-                finishReadTimeSec * 1000
-              }`;
+              document.cookie = `LastSalutationTime=${Math.round(
+                finishReadTimeSec
+              )}`;
             }
           };
         })
