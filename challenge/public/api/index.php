@@ -7,7 +7,6 @@ use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-// DIC
 $container = new Container();
 $container->set('redisClient', function () {
     return new Predis\Client(['host' => 'redis']);
@@ -20,17 +19,6 @@ $app->addRoutingMiddleware();
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 $app->get('/reading-result', function (Request $request, Response $response, $args) {
-
-    // Redis usage example:
-    /** @var \Predis\Client $redisClient */
-    // $redisClient = $this->get('redisClient');
-    // $oldName = $redisClient->get('name');
-    // if (is_string($oldName)) {
-    //     $name = $oldName;
-    // } else {
-    //     $redisClient->set('name', $args['name'], 'EX', 10);
-    //     $name = $args['name'];
-    // }
 
     $cookieValue = '';
     if (empty($_COOKIE["FirstSalutationTime"])) {
