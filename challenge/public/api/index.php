@@ -18,7 +18,7 @@ $app->setBasePath('/api');
 $app->addRoutingMiddleware();
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
-$app->get('/reading-result', function (Request $request, Response $response, $args) {
+$app->get('/start-reading-time', function (Request $request, Response $response, $args) {
 
     $cookieValue = '';
     if (empty($_COOKIE["FirstSalutationTime"])) {
@@ -33,6 +33,20 @@ $app->get('/reading-result', function (Request $request, Response $response, $ar
     ], JSON_THROW_ON_ERROR));
 
     return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->get('/finish-reading-time', function (Request $request, Response $response, $args) {
+
+    $cookieValue = '';
+    if (empty($_COOKIE["LastSalutationTime"])) {
+        $cookieName = "LastSalutationTime";
+        $cookieValue = time();
+        setcookie($cookieName, $cookieValue, '/',null,null,true);
+    }
+    $response->getBody()->write(json_encode([
+        'last_salutation_time' => $_COOKIE["LastSalutationTime"] ?? $cookieValue,
+    ], JSON_THROW_ON_ERROR));
+    return $response->withHeader('Content-Type', 'application/json');    
 });
 
 $app->run();

@@ -123,30 +123,42 @@
         return `• You spent ${hr} hour(s) ${min} min(s) ${sec} second(s) reading the article.`;
       }
 
-      fetch("http://localhost:8087/api/reading-result")
+      let startReadTimeInSG;
+      let startReadTimeSec;
+
+      fetch("http://localhost:8087/api/start-reading-time")
         .then((res) => res.json())
         .then((data) => {
-          let startReadTimeSec = data.first_salutation_time;
-          let startReadTimeInSG = new Date(
-            data.first_salutation_time * 1000
-          ).toLocaleString("en-GB", {
-            timeZone: "Asia/Singapore",
-            timeZoneName: "long",
-          });
+          startReadTimeSec = data.first_salutation_time;
+          startReadTimeInSG = new Date(startReadTimeSec * 1000).toLocaleString(
+            "en-GB",
+            {
+              timeZone: "Asia/Singapore",
+              timeZoneName: "long",
+            }
+          );
+        })
+        .catch(function (err) {
+          console.error("Something went wrong.", err);
+        });
 
-          let finishReadTimeSec;
-          let trigger = true;
-          let hasFinishTimeCookie = document.cookie.length;
+      let finishReadTimeInSG;
+      let trigger = true;
+      let hasFinishTimeCookie = document.cookie.length;
+      window.onscroll = function () {
+        if (
+          hasFinishTimeCookie === 0 &&
+          trigger &&
+          window.innerHeight + window.scrollY >= document.body.offsetHeight
+        ) {
+          trigger = false;
 
-          window.onscroll = function () {
-            if (
-              hasFinishTimeCookie === 0 &&
-              trigger &&
-              window.innerHeight + window.scrollY >= document.body.offsetHeight
-            ) {
-              trigger = false;
-              finishReadTimeSec = new Date().getTime() / 1000;
-              let finishReadTimeInSG = new Date().toLocaleString("en-GB", {
+          fetch("http://localhost:8087/api/finish-reading-time")
+            .then((res) => res.json())
+            .then((data) => {
+              finishReadTimeInSG = new Date(
+                data.last_salutation_time * 1000
+              ).toLocaleString("en-GB", {
                 timeZone: "Asia/Singapore",
                 timeZoneName: "long",
               });
@@ -160,20 +172,16 @@
               document.querySelector(
                 "#myPopup"
               ).innerText = `• You start reading the article at ${startReadTimeInSG}\n• You finish reading it at ${finishReadTimeInSG}\n${spendingTime(
-                finishReadTimeSec - startReadTimeSec
+                data.last_salutation_time - startReadTimeSec
               )}`;
               const popup = document.getElementById("myPopup");
               popup.classList.toggle("show");
-
-              document.cookie = `LastSalutationTime=${Math.round(
-                finishReadTimeSec
-              )}`;
-            }
-          };
-        })
-        .catch(function (err) {
-          console.error("Something went wrong.", err);
-        });
+            })
+            .catch(function (err) {
+              console.error("Something went wrong.", err);
+            });
+        }
+      };
 
       let closeBtn = document.querySelector("button");
       function closePopupFunction() {
