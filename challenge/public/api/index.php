@@ -24,7 +24,7 @@ $app->get('/start-reading-time', function (Request $request, Response $response,
     if (empty($_COOKIE["FirstSalutationTime"])) {
         $cookieName = "FirstSalutationTime";
         $cookieValue = (string)time();
-        $expires = time() + 60 * 60 * 24 * 30; // 30 days.
+        $expires = time() + 60 * 60 * 24 * 30; 
         setcookie($cookieName, $cookieValue, $expires, '/',null,null,true);
     }
 
@@ -41,7 +41,8 @@ $app->get('/finish-reading-time', function (Request $request, Response $response
     if (empty($_COOKIE["LastSalutationTime"])) {
         $cookieName = "LastSalutationTime";
         $cookieValue = time();
-        setcookie($cookieName, $cookieValue, '/',null,null,true);
+        $expires = time() + 60 * 60 * 24 * 30; 
+        setcookie($cookieName, $cookieValue, $expires, '/',null,null,true);
     }
     $response->getBody()->write(json_encode([
         'last_salutation_time' => $_COOKIE["LastSalutationTime"] ?? $cookieValue,
